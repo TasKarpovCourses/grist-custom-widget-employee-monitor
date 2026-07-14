@@ -1397,7 +1397,7 @@
     });
 
     grist.onRecords(async function(incomingRecords) {
-      records = Array.isArray(incomingRecords) ? incomingRecords : [];
+      records = await loadFullSelectedTable(incomingRecords);
 
       await refreshChoiceOptions();
       populateFilters();
@@ -1420,6 +1420,27 @@
         autoSelectFirst: selectedRowId === null
       });
     });
+
+    async function loadFullSelectedTable(fallbackRecords) {
+      try {
+        const tableId = await grist.getTable().getTableId();
+        const fullTable = await grist.docApi.fetchTable(tableId);
+        const fullRecords = normalizeRows(fullTable);
+
+        if (fullRecords.length) {
+          return fullRecords;
+        }
+      } catch (error) {
+        console.warn(
+          "Не удалось загрузить полную таблицу, используем данные виджета:",
+          error
+        );
+      }
+
+      return Array.isArray(fallbackRecords)
+        ? fallbackRecords
+        : [];
+    }
 
     elements.searchFilter.addEventListener("input", function() {
       applyFilters({autoSelectFirst: true});
@@ -1633,6 +1654,16 @@
 
       if ((autoSelectFirst || selectedRowId === null) && filteredRecords.length) {
         selectEmployee(filteredRecords[0].id, false);
+      } else if (selectedRowId !== null) {
+        const refreshedRecord = records.find(function(record) {
+          return record.id === selectedRowId;
+        });
+
+        if (refreshedRecord) {
+          currentRecord = refreshedRecord;
+          renderEmployee(refreshedRecord);
+          showEmployeeCard();
+        }
       } else if (!filteredRecords.length) {
         showEmptyDetails();
       }
