@@ -522,6 +522,12 @@
       border-bottom: 1px solid var(--line);
     }
 
+    .summary-item--wide {
+      grid-column: 1 / -1;
+      border-top: 1px solid var(--line);
+      border-right: 0 !important;
+    }
+
     .summary-label {
       margin-bottom: 7px;
       color: var(--subtle);
@@ -1104,6 +1110,11 @@
               <div class="summary-label">Должность</div>
               <div id="post" class="summary-value">—</div>
             </div>
+
+            <div class="summary-item summary-item--wide">
+              <div class="summary-label">Дата рождения</div>
+              <div id="dateBirthday" class="summary-value">—</div>
+            </div>
           </div>
 
           <div class="accordion-grid">
@@ -1216,6 +1227,11 @@
               <label class="form-field">
                 <span class="form-label">Gmail</span>
                 <input class="form-control" type="email" name="email_gmail">
+              </label>
+
+              <label class="form-field">
+                <span class="form-label">Дата рождения</span>
+                <input class="form-control" type="date" name="date_birthday">
               </label>
 
               <label class="form-field">
@@ -1336,6 +1352,7 @@
       emailGmailRow: document.getElementById("emailGmailRow"),
       emailGmail: document.getElementById("emailGmail"),
       copyCardEmailGmailButton: document.getElementById("copyCardEmailGmailButton"),
+      dateBirthday: document.getElementById("dateBirthday"),
       department: document.getElementById("department"),
       post: document.getElementById("post"),
       type: document.getElementById("type"),
@@ -1362,6 +1379,7 @@
       "email",
       "email_personal",
       "email_gmail",
+      "date_birthday",
       "department",
       "post",
       "type",
@@ -1779,6 +1797,9 @@
       renderEmails(email, emailPersonal, emailGmail);
       renderStatus(status);
 
+      elements.dateBirthday.textContent =
+        formatDisplayDate(record.date_birthday);
+
       elements.dateOnSummary.textContent =
         `Дата выхода: ${formatDisplayDate(record.date_on)}`;
 
@@ -1917,7 +1938,11 @@
           return;
         }
 
-        if (fieldName === "date_on" || fieldName === "date_off") {
+        if (
+          fieldName === "date_on" ||
+          fieldName === "date_off" ||
+          fieldName === "date_birthday"
+        ) {
           control.value = formatInputDate(record[fieldName]);
         } else if (fieldName !== "department" && fieldName !== "type") {
           control.value = clean(record[fieldName]);
@@ -1935,7 +1960,11 @@
           return;
         }
 
-        if (fieldName === "date_on" || fieldName === "date_off") {
+        if (
+          fieldName === "date_on" ||
+          fieldName === "date_off" ||
+          fieldName === "date_birthday"
+        ) {
           fields[fieldName] = control.value || null;
         } else {
           fields[fieldName] = control.value.trim();
@@ -1991,7 +2020,8 @@
           "type",
           "email",
           "post",
-          "comments"
+          "comments",
+          "date_birthday"
         ]);
 
         const columnsByParent = new Map();
