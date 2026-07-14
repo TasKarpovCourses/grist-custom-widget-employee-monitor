@@ -546,6 +546,33 @@
       text-underline-offset: 3px;
     }
 
+    .email-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .email-item {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .email-item__label {
+      color: var(--subtle);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .email-item__value {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .summary-value--with-action {
       display: flex;
       gap: 8px;
@@ -1038,16 +1065,28 @@
           <div class="summary-grid summary-grid--two-columns">
             <div class="summary-item">
               <div class="summary-label">Email</div>
-              <div class="summary-value summary-value--with-action">
-                <span id="email">—</span>
-                <button
-                  id="copyCardEmailButton"
-                  class="copy-card-email"
-                  type="button"
-                  title="Скопировать email"
-                  aria-label="Скопировать email"
-                  disabled
-                >⧉</button>
+
+              <div class="email-list">
+                <div id="emailRow" class="email-item">
+                  <span class="email-item__label">Рабочий</span>
+                  <span id="email" class="email-item__value">—</span>
+                  <button id="copyCardEmailButton" class="copy-card-email" type="button"
+                    title="Скопировать рабочий email" aria-label="Скопировать рабочий email" disabled>⧉</button>
+                </div>
+
+                <div id="emailPersonalRow" class="email-item">
+                  <span class="email-item__label">Личный</span>
+                  <span id="emailPersonal" class="email-item__value">—</span>
+                  <button id="copyCardEmailPersonalButton" class="copy-card-email" type="button"
+                    title="Скопировать личный email" aria-label="Скопировать личный email" disabled>⧉</button>
+                </div>
+
+                <div id="emailGmailRow" class="email-item">
+                  <span class="email-item__label">Gmail</span>
+                  <span id="emailGmail" class="email-item__value">—</span>
+                  <button id="copyCardEmailGmailButton" class="copy-card-email" type="button"
+                    title="Скопировать Gmail" aria-label="Скопировать Gmail" disabled>⧉</button>
+                </div>
               </div>
             </div>
 
@@ -1165,8 +1204,18 @@
               </label>
 
               <label class="form-field">
-                <span class="form-label">Email</span>
+                <span class="form-label">Рабочий email</span>
                 <input class="form-control" type="email" name="email" autocomplete="email">
+              </label>
+
+              <label class="form-field">
+                <span class="form-label">Личный email</span>
+                <input class="form-control" type="email" name="email_personal">
+              </label>
+
+              <label class="form-field">
+                <span class="form-label">Gmail</span>
+                <input class="form-control" type="email" name="email_gmail">
               </label>
 
               <label class="form-field">
@@ -1278,8 +1327,15 @@
       statusBadge: document.getElementById("statusBadge"),
       statusText: document.getElementById("statusText"),
       typeBadge: document.getElementById("typeBadge"),
+      emailRow: document.getElementById("emailRow"),
       email: document.getElementById("email"),
       copyCardEmailButton: document.getElementById("copyCardEmailButton"),
+      emailPersonalRow: document.getElementById("emailPersonalRow"),
+      emailPersonal: document.getElementById("emailPersonal"),
+      copyCardEmailPersonalButton: document.getElementById("copyCardEmailPersonalButton"),
+      emailGmailRow: document.getElementById("emailGmailRow"),
+      emailGmail: document.getElementById("emailGmail"),
+      copyCardEmailGmailButton: document.getElementById("copyCardEmailGmailButton"),
       department: document.getElementById("department"),
       post: document.getElementById("post"),
       type: document.getElementById("type"),
@@ -1304,6 +1360,8 @@
       "tas_on_link",
       "date_on",
       "email",
+      "email_personal",
+      "email_gmail",
       "department",
       "post",
       "type",
@@ -1382,26 +1440,32 @@
       applyFilters({autoSelectFirst: true});
     });
 
-    elements.copyCardEmailButton.addEventListener("click", async function() {
-      const email = clean(elements.copyCardEmailButton.dataset.email);
+    [
+      elements.copyCardEmailButton,
+      elements.copyCardEmailPersonalButton,
+      elements.copyCardEmailGmailButton
+    ].forEach(function(button) {
+      button.addEventListener("click", async function() {
+        const email = clean(button.dataset.email);
 
-      if (!email) {
-        return;
-      }
+        if (!email) {
+          return;
+        }
 
-      const copied = await copyText(email);
+        const copied = await copyText(email);
 
-      if (copied) {
-        const originalText = elements.copyCardEmailButton.textContent;
-        elements.copyCardEmailButton.textContent = "✓";
-        showNotice(`Email ${email} скопирован.`, "success");
+        if (copied) {
+          const originalText = button.textContent;
+          button.textContent = "✓";
+          showNotice(`Email ${email} скопирован.`, "success");
 
-        window.setTimeout(function() {
-          elements.copyCardEmailButton.textContent = originalText;
-        }, 1300);
-      } else {
-        showNotice("Не удалось скопировать email.", "error");
-      }
+          window.setTimeout(function() {
+            button.textContent = originalText;
+          }, 1300);
+        } else {
+          showNotice("Не удалось скопировать email.", "error");
+        }
+      });
     });
 
     elements.editButton.addEventListener("click", function() {
@@ -1666,6 +1730,8 @@
       const workType = clean(record.type);
       const status = clean(record.status);
       const email = clean(record.email);
+      const emailPersonal = clean(record.email_personal);
+      const emailGmail = clean(record.email_gmail);
       const comments = clean(record.comments);
 
       elements.name.textContent = name;
@@ -1679,7 +1745,7 @@
       elements.type.textContent = workType || "—";
       elements.typeBadge.textContent = workType || "Тип не указан";
 
-      renderEmail(email);
+      renderEmails(email, emailPersonal, emailGmail);
       renderStatus(status);
 
       elements.dateOnSummary.textContent =
@@ -1699,10 +1765,40 @@
       updateEditButton();
     }
 
-    function renderEmail(email) {
-      elements.email.textContent = email || "—";
-      elements.copyCardEmailButton.disabled = !email;
-      elements.copyCardEmailButton.dataset.email = email || "";
+    function renderEmails(email, emailPersonal, emailGmail) {
+      renderEmailRow(
+        elements.emailRow,
+        elements.email,
+        elements.copyCardEmailButton,
+        email
+      );
+
+      renderEmailRow(
+        elements.emailPersonalRow,
+        elements.emailPersonal,
+        elements.copyCardEmailPersonalButton,
+        emailPersonal
+      );
+
+      renderEmailRow(
+        elements.emailGmailRow,
+        elements.emailGmail,
+        elements.copyCardEmailGmailButton,
+        emailGmail
+      );
+
+      if (!email && !emailPersonal && !emailGmail) {
+        elements.emailRow.style.display = "grid";
+        elements.email.textContent = "—";
+      }
+    }
+
+    function renderEmailRow(row, valueElement, button, email) {
+      const hasEmail = Boolean(email);
+      row.style.display = hasEmail ? "grid" : "none";
+      valueElement.textContent = email;
+      button.disabled = !hasEmail;
+      button.dataset.email = email || "";
     }
 
     function renderStatus(status) {
