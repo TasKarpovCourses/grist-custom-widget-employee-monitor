@@ -532,6 +532,10 @@
       text-transform: uppercase;
     }
 
+    .summary-label--empty {
+      visibility: hidden;
+    }
+
     .summary-value {
       min-width: 0;
       color: var(--text);
@@ -572,6 +576,15 @@
       font-size: 13px;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .contact-value,
+    .contact-value a,
+    .contact-value > span {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: normal;
     }
 
     .work-list {
@@ -1101,6 +1114,8 @@
             </div>
 
             <div class="summary-item">
+              <div class="summary-label summary-label--empty" aria-hidden="true">&nbsp;</div>
+
               <div class="work-list">
                 <div class="work-item">
                   <span class="work-item__label">Отдел</span>
@@ -1121,17 +1136,17 @@
 
             <div class="summary-item">
               <div class="summary-label">Дата рождения</div>
-              <div id="dateBirthday" class="summary-value">—</div>
+              <div id="dateBirthday" class="summary-value contact-value">—</div>
             </div>
 
             <div class="summary-item">
               <div class="summary-label">Местонахождение</div>
-              <div id="location" class="summary-value">—</div>
+              <div id="location" class="summary-value contact-value">—</div>
             </div>
 
             <div class="summary-item">
               <div class="summary-label">Telegram</div>
-              <div class="summary-value summary-value--with-action">
+              <div class="summary-value summary-value--with-action contact-value">
                 <span id="telegram">—</span>
                 <button
                   id="copyCardTelegramButton"
@@ -1146,7 +1161,7 @@
 
             <div class="summary-item">
               <div class="summary-label">Телефон</div>
-              <div class="summary-value summary-value--with-action">
+              <div class="summary-value summary-value--with-action contact-value">
                 <span id="phone">—</span>
                 <button
                   id="copyCardPhoneButton"
