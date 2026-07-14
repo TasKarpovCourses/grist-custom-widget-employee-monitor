@@ -512,20 +512,15 @@
     .summary-item {
       min-width: 0;
       padding: 17px;
+      border-bottom: 1px solid var(--line);
     }
 
     .summary-item:nth-child(odd) {
       border-right: 1px solid var(--line);
     }
 
-    .summary-item:nth-child(-n + 2) {
-      border-bottom: 1px solid var(--line);
-    }
-
-    .summary-item--wide {
-      grid-column: 1 / -1;
-      border-top: 1px solid var(--line);
-      border-right: 0 !important;
+    .summary-item:nth-last-child(-n + 2) {
+      border-bottom: 0;
     }
 
     .summary-label {
@@ -571,6 +566,34 @@
     }
 
     .email-item__value {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .work-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .work-item {
+      display: grid;
+      grid-template-columns: 94px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      min-height: 30px;
+    }
+
+    .work-item__label {
+      color: var(--subtle);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .work-item__value {
       min-width: 0;
       overflow: hidden;
       color: var(--text);
@@ -889,23 +912,6 @@
         grid-template-columns: 330px minmax(0, 1fr);
       }
 
-      .summary-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .summary-item {
-        border-bottom: 1px solid var(--line);
-      }
-
-      .summary-item:nth-child(2) {
-        border-right: 0;
-      }
-
-      .summary-item:nth-child(3),
-      .summary-item:nth-child(4) {
-        border-bottom: 0;
-      }
-
     }
 
     @media (max-width: 790px) {
@@ -957,12 +963,10 @@
         grid-template-columns: 1fr;
       }
 
-      .summary-item {
+      .summary-item,
+      .summary-item:nth-child(odd),
+      .summary-item:nth-last-child(-n + 2) {
         border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .summary-item:nth-child(3) {
         border-bottom: 1px solid var(--line);
       }
 
@@ -1068,7 +1072,7 @@
         </section>
 
         <section class="card-content">
-          <div class="summary-grid summary-grid--two-columns">
+          <div class="summary-grid">
             <div class="summary-item">
               <div class="summary-label">Email</div>
 
@@ -1097,23 +1101,62 @@
             </div>
 
             <div class="summary-item">
-              <div class="summary-label">Формат работы</div>
-              <div id="type" class="summary-value">—</div>
+              <div class="work-list">
+                <div class="work-item">
+                  <span class="work-item__label">Отдел</span>
+                  <span id="department" class="work-item__value">—</span>
+                </div>
+
+                <div class="work-item">
+                  <span class="work-item__label">Должность</span>
+                  <span id="post" class="work-item__value">—</span>
+                </div>
+
+                <div class="work-item">
+                  <span class="work-item__label">Формат работы</span>
+                  <span id="type" class="work-item__value">—</span>
+                </div>
+              </div>
             </div>
 
             <div class="summary-item">
-              <div class="summary-label">Отдел</div>
-              <div id="department" class="summary-value">—</div>
-            </div>
-
-            <div class="summary-item">
-              <div class="summary-label">Должность</div>
-              <div id="post" class="summary-value">—</div>
-            </div>
-
-            <div class="summary-item summary-item--wide">
               <div class="summary-label">Дата рождения</div>
               <div id="dateBirthday" class="summary-value">—</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">Местонахождение</div>
+              <div id="location" class="summary-value">—</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">Telegram</div>
+              <div class="summary-value summary-value--with-action">
+                <span id="telegram">—</span>
+                <button
+                  id="copyCardTelegramButton"
+                  class="copy-card-email"
+                  type="button"
+                  title="Скопировать Telegram"
+                  aria-label="Скопировать Telegram"
+                  disabled
+                >⧉</button>
+              </div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-label">Телефон</div>
+              <div class="summary-value summary-value--with-action">
+                <span id="phone">—</span>
+                <button
+                  id="copyCardPhoneButton"
+                  class="copy-card-email"
+                  type="button"
+                  title="Скопировать телефон"
+                  aria-label="Скопировать телефон"
+                  disabled
+                >⧉</button>
+              </div>
             </div>
           </div>
 
@@ -1235,6 +1278,21 @@
               </label>
 
               <label class="form-field">
+                <span class="form-label">Местонахождение</span>
+                <input class="form-control" type="text" name="location">
+              </label>
+
+              <label class="form-field">
+                <span class="form-label">Телефон</span>
+                <input class="form-control" type="tel" name="phone">
+              </label>
+
+              <label class="form-field">
+                <span class="form-label">Telegram</span>
+                <input class="form-control" type="text" name="tg" placeholder="@username или ссылка">
+              </label>
+
+              <label class="form-field">
                 <span class="form-label">Отдел</span>
                 <select class="form-control" name="department">
                   <option value="">Не выбрано</option>
@@ -1353,6 +1411,11 @@
       emailGmail: document.getElementById("emailGmail"),
       copyCardEmailGmailButton: document.getElementById("copyCardEmailGmailButton"),
       dateBirthday: document.getElementById("dateBirthday"),
+      location: document.getElementById("location"),
+      phone: document.getElementById("phone"),
+      copyCardPhoneButton: document.getElementById("copyCardPhoneButton"),
+      telegram: document.getElementById("telegram"),
+      copyCardTelegramButton: document.getElementById("copyCardTelegramButton"),
       department: document.getElementById("department"),
       post: document.getElementById("post"),
       type: document.getElementById("type"),
@@ -1380,6 +1443,9 @@
       "email_personal",
       "email_gmail",
       "date_birthday",
+      "location",
+      "phone",
+      "tg",
       "department",
       "post",
       "type",
@@ -1480,29 +1546,31 @@
     });
 
     [
-      elements.copyCardEmailButton,
-      elements.copyCardEmailPersonalButton,
-      elements.copyCardEmailGmailButton
-    ].forEach(function(button) {
-      button.addEventListener("click", async function() {
-        const email = clean(button.dataset.email);
+      {button: elements.copyCardEmailButton, label: "Email"},
+      {button: elements.copyCardEmailPersonalButton, label: "Email"},
+      {button: elements.copyCardEmailGmailButton, label: "Email"},
+      {button: elements.copyCardTelegramButton, label: "Telegram"},
+      {button: elements.copyCardPhoneButton, label: "Телефон"}
+    ].forEach(function(item) {
+      item.button.addEventListener("click", async function() {
+        const value = clean(item.button.dataset.copyValue);
 
-        if (!email) {
+        if (!value) {
           return;
         }
 
-        const copied = await copyText(email);
+        const copied = await copyText(value);
 
         if (copied) {
-          const originalText = button.textContent;
-          button.textContent = "✓";
-          showNotice(`Email ${email} скопирован.`, "success");
+          const originalText = item.button.textContent;
+          item.button.textContent = "✓";
+          showNotice(`${item.label} скопирован.`, "success");
 
           window.setTimeout(function() {
-            button.textContent = originalText;
+            item.button.textContent = originalText;
           }, 1300);
         } else {
-          showNotice("Не удалось скопировать email.", "error");
+          showNotice(`Не удалось скопировать ${item.label.toLowerCase()}.`, "error");
         }
       });
     });
@@ -1800,6 +1868,10 @@
       elements.dateBirthday.textContent =
         formatDisplayDate(record.date_birthday);
 
+      elements.location.textContent = clean(record.location) || "—";
+      renderPhone(record.phone);
+      renderTelegram(record.tg);
+
       elements.dateOnSummary.textContent =
         `Дата выхода: ${formatDisplayDate(record.date_on)}`;
 
@@ -1850,7 +1922,53 @@
       row.style.display = hasEmail ? "grid" : "none";
       valueElement.textContent = email;
       button.disabled = !hasEmail;
-      button.dataset.email = email || "";
+      button.dataset.copyValue = email || "";
+    }
+
+    function renderPhone(value) {
+      const phone = clean(value);
+      elements.phone.replaceChildren();
+      elements.copyCardPhoneButton.disabled = !phone;
+      elements.copyCardPhoneButton.dataset.copyValue = phone || "";
+
+      if (!phone) {
+        elements.phone.textContent = "—";
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.href = `tel:${phone.replace(/[^+\d]/g, "")}`;
+      link.textContent = phone;
+      elements.phone.appendChild(link);
+    }
+
+    function renderTelegram(value) {
+      const telegram = clean(value);
+      elements.telegram.replaceChildren();
+      elements.copyCardTelegramButton.disabled = !telegram;
+      elements.copyCardTelegramButton.dataset.copyValue = telegram || "";
+
+      if (!telegram) {
+        elements.telegram.textContent = "—";
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      if (/^https?:\/\//i.test(telegram)) {
+        link.href = telegram;
+        link.textContent = telegram;
+      } else {
+        const username = telegram.replace(/^@/, "").trim();
+        link.href = `https://t.me/${encodeURIComponent(username)}`;
+        link.textContent = telegram.startsWith("@")
+          ? telegram
+          : `@${telegram}`;
+      }
+
+      elements.telegram.appendChild(link);
     }
 
     function renderStatus(status) {
@@ -2021,7 +2139,10 @@
           "email",
           "post",
           "comments",
-          "date_birthday"
+          "date_birthday",
+          "location",
+          "phone",
+          "tg"
         ]);
 
         const columnsByParent = new Map();
